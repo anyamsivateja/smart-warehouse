@@ -1,0 +1,2948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WareSmart AI - Smart Warehouse</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:#eef2f7;
+    color:#172033;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    width:235px;
+    background:#0f172a;
+    color:white;
+    padding:20px 15px;
+    z-index:20;
+}
+
+.logo{
+    font-size:25px;
+    font-weight:bold;
+    margin:5px 10px 30px;
+}
+
+.logo span{
+    color:#38bdf8;
+}
+
+.menu-title{
+    font-size:11px;
+    color:#64748b;
+    margin:18px 10px 6px;
+    text-transform:uppercase;
+}
+
+.nav-btn{
+    width:100%;
+    padding:12px;
+    border:0;
+    background:transparent;
+    color:#cbd5e1;
+    text-align:left;
+    border-radius:8px;
+    margin:3px 0;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.nav-btn:hover,
+.nav-btn.active{
+    background:#2563eb;
+    color:white;
+}
+
+/* MAIN */
+
+.main{
+    margin-left:235px;
+    min-height:100vh;
+}
+
+.topbar{
+    height:70px;
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 28px;
+    box-shadow:0 2px 10px #0000000d;
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+.live{
+    color:#16a34a;
+    font-weight:bold;
+}
+
+.content{
+    padding:25px;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+    animation:showPage .3s ease;
+}
+
+@keyframes showPage{
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* CARDS */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin:20px 0;
+}
+
+.card{
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 3px 15px #0000000d;
+    margin-bottom:18px;
+}
+
+.stat-title{
+    color:#64748b;
+    font-size:13px;
+}
+
+.stat-number{
+    font-size:30px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+.blue{color:#2563eb}
+.green{color:#16a34a}
+.orange{color:#ea580c}
+.red{color:#dc2626}
+.purple{color:#9333ea}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.subtitle{
+    color:#64748b;
+    margin-top:5px;
+}
+
+/* BUTTONS */
+
+.btn{
+    padding:10px 14px;
+    border:0;
+    border-radius:8px;
+    color:white;
+    cursor:pointer;
+    font-weight:bold;
+    margin:3px;
+}
+
+.btn-blue{background:#2563eb}
+.btn-green{background:#16a34a}
+.btn-orange{background:#ea580c}
+.btn-red{background:#dc2626}
+.btn-purple{background:#9333ea}
+.btn-dark{background:#334155}
+
+/* TABLE */
+
+.table-container{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#f8fafc;
+    color:#64748b;
+    font-size:12px;
+    text-transform:uppercase;
+}
+
+th,td{
+    padding:12px;
+    border-bottom:1px solid #e2e8f0;
+    text-align:left;
+    white-space:nowrap;
+}
+
+tr:hover{
+    background:#f8fafc;
+}
+
+/* BADGES */
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.badge-high{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+.badge-medium{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.badge-low{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.badge-blue{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
+
+.badge-purple{
+    background:#f3e8ff;
+    color:#7e22ce;
+}
+
+.badge-red{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+/* BARCODE */
+
+.barcode-container{
+    display:inline-block;
+    background:white;
+    border:1px solid #cbd5e1;
+    padding:8px;
+    border-radius:6px;
+    text-align:center;
+}
+
+.barcode{
+    display:flex;
+    height:52px;
+    align-items:stretch;
+    overflow:hidden;
+    background:white;
+}
+
+.bar{
+    display:block;
+    height:52px;
+}
+
+.barcode-id{
+    font-family:monospace;
+    font-size:11px;
+    letter-spacing:2px;
+    margin-top:5px;
+}
+
+/* DASHBOARD */
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+}
+
+/* WAREHOUSE ANIMATION */
+
+.warehouse{
+    height:260px;
+    border-radius:12px;
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(#dff7ff,#f8fafc);
+}
+
+.warehouse-floor{
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:35px;
+    background:#cbd5e1;
+}
+
+.shelf{
+    position:absolute;
+    width:70px;
+    height:130px;
+    bottom:35px;
+    border:5px solid #64748b;
+}
+
+.shelf-one{left:12%}
+.shelf-two{right:12%}
+
+.small-box{
+    position:absolute;
+    width:22px;
+    height:22px;
+    background:#f59e0b;
+    border:2px solid #92400e;
+    animation:boxFloat 1.5s infinite alternate;
+}
+
+.sb1{left:15%;bottom:80px}
+.sb2{left:15%;bottom:115px}
+.sb3{right:15%;bottom:80px}
+.sb4{right:15%;bottom:115px}
+
+.robot{
+    position:absolute;
+    bottom:35px;
+    left:30%;
+    font-size:42px;
+    animation:robotMove 5s infinite alternate;
+}
+
+.truck{
+    position:absolute;
+    bottom:4px;
+    left:-70px;
+    font-size:42px;
+    animation:truckMove 7s linear infinite;
+}
+
+@keyframes robotMove{
+    from{left:28%}
+    to{left:62%}
+}
+
+@keyframes truckMove{
+    from{left:-70px}
+    to{left:105%}
+}
+
+@keyframes boxFloat{
+    from{transform:translateY(0)}
+    to{transform:translateY(-7px)}
+}
+
+/* AI */
+
+.ai-box{
+    background:#f5f3ff;
+    border-left:5px solid #9333ea;
+    padding:15px;
+    border-radius:9px;
+    line-height:1.7;
+}
+
+.ai-title{
+    font-weight:bold;
+    color:#7e22ce;
+}
+
+/* PROGRESS */
+
+.progress{
+    width:100%;
+    height:10px;
+    background:#e2e8f0;
+    border-radius:10px;
+    overflow:hidden;
+    margin:10px 0;
+}
+
+.progress-fill{
+    height:100%;
+    background:#2563eb;
+    border-radius:10px;
+}
+
+/* ANALYTICS */
+
+.chart{
+    height:300px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-around;
+    border-bottom:2px solid #94a3b8;
+    padding:20px;
+}
+
+.chart-item{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    align-items:center;
+    gap:5px;
+}
+
+.chart-bar{
+    width:48px;
+    border-radius:7px 7px 0 0;
+    animation:grow 1s ease;
+}
+
+.c1{
+    height:85%;
+    background:#2563eb;
+}
+
+.c2{
+    height:70%;
+    background:#16a34a;
+}
+
+.c3{
+    height:78%;
+    background:#ea580c;
+}
+
+.c4{
+    height:35%;
+    background:#dc2626;
+}
+
+.c5{
+    height:60%;
+    background:#9333ea;
+}
+
+@keyframes grow{
+    from{height:0}
+}
+
+/* WORKFLOW */
+
+.workflow{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:5px;
+    margin-top:20px;
+}
+
+.step{
+    flex:1;
+    text-align:center;
+    padding:15px 5px;
+    border-radius:10px;
+    background:#f1f5f9;
+}
+
+.step-icon{
+    font-size:25px;
+    display:block;
+    margin-bottom:5px;
+}
+
+.arrow{
+    font-size:20px;
+}
+
+/* TASK */
+
+.task-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.task{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 3px 15px #0000000d;
+    border-left:5px solid #2563eb;
+}
+
+/* ISSUE */
+
+.issue-card{
+    border-left:5px solid #dc2626;
+}
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:#00000099;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    background:white;
+    width:450px;
+    max-width:92%;
+    padding:25px;
+    border-radius:14px;
+}
+
+.input,
+select,
+textarea{
+    width:100%;
+    padding:11px;
+    margin:7px 0;
+    border:1px solid #cbd5e1;
+    border-radius:7px;
+}
+
+textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+/* SEARCH */
+
+.search{
+    width:280px;
+    padding:10px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1000px){
+
+    .cards{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .dashboard-grid,
+    .task-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:700px){
+
+    .sidebar{
+        position:relative;
+        width:100%;
+        height:auto;
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .workflow{
+        flex-direction:column;
+    }
+
+    .arrow{
+        transform:rotate(90deg);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+<div class="logo">
+📦 Ware<span>Smart</span>
+</div>
+
+<div class="menu-title">Main</div>
+
+<button class="nav-btn active" onclick="showPage('dashboard',this)">
+🏠 Dashboard
+</button>
+
+<button class="nav-btn" onclick="showPage('orders',this)">
+🛒 Orders
+</button>
+
+<button class="nav-btn" onclick="showPage('inventory',this)">
+📦 Inventory
+</button>
+
+<div class="menu-title">Operations</div>
+
+<button class="nav-btn" onclick="showPage('picking',this)">
+👷 Picking
+</button>
+
+<button class="nav-btn" onclick="showPage('quality',this)">
+✅ Quality Check
+</button>
+
+<button class="nav-btn" onclick="showPage('dispatch',this)">
+🚚 Dispatch
+</button>
+
+<button class="nav-btn" onclick="showPage('issues',this)">
+🚨 Issues
+</button>
+
+<div class="menu-title">Intelligence</div>
+
+<button class="nav-btn" onclick="showPage('analytics',this)">
+📊 Analytics
+</button>
+
+<button class="nav-btn" onclick="showPage('ai',this)">
+🤖 AI Assistant
+</button>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+<header class="topbar">
+
+<h2 id="pageTitle">
+Warehouse Dashboard
+</h2>
+
+<div class="live">
+● SYSTEM ONLINE
+</div>
+
+</header>
+
+
+<div class="content">
+
+
+<!-- DASHBOARD -->
+
+<section id="dashboard" class="page active">
+
+<div class="header">
+
+<div>
+<h1>Warehouse Control Center</h1>
+<p class="subtitle">
+Real-time smart warehouse operations
+</p>
+</div>
+
+<button class="btn btn-green" onclick="openOrderModal()">
++ Create Order
+</button>
+
+</div>
+
+
+<div class="cards">
+
+<div class="card">
+<div class="stat-title">TOTAL ORDERS</div>
+<div class="stat-number blue" id="statOrders">0</div>
+</div>
+
+<div class="card">
+<div class="stat-title">PICKING</div>
+<div class="stat-number orange" id="statPicking">0</div>
+</div>
+
+<div class="card">
+<div class="stat-title">QUALITY CHECK</div>
+<div class="stat-number purple" id="statQC">0</div>
+</div>
+
+<div class="card">
+<div class="stat-title">READY TO DISPATCH</div>
+<div class="stat-number green" id="statDispatch">0</div>
+</div>
+
+</div>
+
+
+<div class="dashboard-grid">
+
+<div class="card">
+
+<h2>🤖 AI Decision Engine</h2>
+
+<br>
+
+<div class="ai-box" id="dashboardAI">
+AI analyzing warehouse...
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>🏭 Live Warehouse</h2>
+
+<br>
+
+<div class="warehouse">
+
+<div class="shelf shelf-one"></div>
+<div class="shelf shelf-two"></div>
+
+<div class="small-box sb1"></div>
+<div class="small-box sb2"></div>
+<div class="small-box sb3"></div>
+<div class="small-box sb4"></div>
+
+<div class="robot">🤖</div>
+<div class="truck">🚚</div>
+
+<div class="warehouse-floor"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>🔄 Fulfillment Workflow</h2>
+
+<div class="workflow">
+
+<div class="step">
+<span class="step-icon">📝</span>
+Created
+</div>
+
+<div class="arrow">→</div>
+
+<div class="step">
+<span class="step-icon">📦</span>
+Allocated
+</div>
+
+<div class="arrow">→</div>
+
+<div class="step">
+<span class="step-icon">👷</span>
+Picking
+</div>
+
+<div class="arrow">→</div>
+
+<div class="step">
+<span class="step-icon">✅</span>
+QC
+</div>
+
+<div class="arrow">→</div>
+
+<div class="step">
+<span class="step-icon">🚚</span>
+Dispatch
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="header">
+
+<div>
+<h2>📦 Recent Orders</h2>
+</div>
+
+<input
+class="search"
+id="dashboardSearch"
+placeholder="Search Order..."
+onkeyup="renderDashboardOrders()">
+
+</div>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Order</th>
+<th>Customer</th>
+<th>Product</th>
+<th>Qty</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Barcode</th>
+</tr>
+
+</thead>
+
+<tbody id="dashboardOrders"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ORDERS -->
+
+<section id="orders" class="page">
+
+<div class="header">
+
+<div>
+<h1>🛒 Order Management</h1>
+<p class="subtitle">Create, prioritize and track customer orders.</p>
+</div>
+
+<button class="btn btn-green" onclick="openOrderModal()">
++ Create Order
+</button>
+
+</div>
+
+
+<div class="card">
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Order ID</th>
+<th>Customer</th>
+<th>Product</th>
+<th>Qty</th>
+<th>Location</th>
+<th>Priority</th>
+<th>Status</th>
+<th>Barcode</th>
+</tr>
+
+</thead>
+
+<tbody id="ordersTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- INVENTORY -->
+
+<section id="inventory" class="page">
+
+<div class="header">
+
+<div>
+<h1>📦 Inventory Management</h1>
+<p class="subtitle">
+Stock visibility and replenishment decisions
+</p>
+</div>
+
+</div>
+
+
+<div class="cards">
+
+<div class="card">
+<div class="stat-title">TOTAL UNITS</div>
+<div class="stat-number blue">1,248</div>
+</div>
+
+<div class="card">
+<div class="stat-title">LOW STOCK</div>
+<div class="stat-number orange">18</div>
+</div>
+
+<div class="card">
+<div class="stat-title">OUT OF STOCK</div>
+<div class="stat-number red">3</div>
+</div>
+
+<div class="card">
+<div class="stat-title">INVENTORY ACCURACY</div>
+<div class="stat-number green">98.7%</div>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Stock Monitor</h2>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+<th>SKU</th>
+<th>Product</th>
+<th>Location</th>
+<th>Available</th>
+<th>Reserved</th>
+<th>Reorder Level</th>
+<th>Status</th>
+<th>AI Recommendation</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+<td>SKU-101</td>
+<td>Wireless Mouse</td>
+<td>A-12</td>
+<td>7</td>
+<td>3</td>
+<td>15</td>
+<td><span class="badge badge-high">LOW</span></td>
+<td>Reorder 25 units</td>
+</tr>
+
+<tr>
+<td>SKU-204</td>
+<td>Keyboard</td>
+<td>B-04</td>
+<td>0</td>
+<td>8</td>
+<td>20</td>
+<td><span class="badge badge-high">OUT</span></td>
+<td>URGENT REPLENISHMENT</td>
+</tr>
+
+<tr>
+<td>SKU-305</td>
+<td>USB Cable</td>
+<td>C-08</td>
+<td>86</td>
+<td>12</td>
+<td>20</td>
+<td><span class="badge badge-low">HEALTHY</span></td>
+<td>No action</td>
+</tr>
+
+<tr>
+<td>SKU-410</td>
+<td>Webcam</td>
+<td>A-18</td>
+<td>24</td>
+<td>5</td>
+<td>10</td>
+<td><span class="badge badge-low">HEALTHY</span></td>
+<td>No action</td>
+</tr>
+
+<tr>
+<td>SKU-512</td>
+<td>Headphones</td>
+<td>D-02</td>
+<td>11</td>
+<td>7</td>
+<td>15</td>
+<td><span class="badge badge-medium">WATCH</span></td>
+<td>Monitor stock</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- PICKING -->
+
+<section id="picking" class="page">
+
+<div class="header">
+
+<div>
+<h1>👷 Picking Operations</h1>
+<p class="subtitle">
+Pick items and scan their order barcode.
+</p>
+</div>
+
+</div>
+
+<div id="pickingList" class="task-grid"></div>
+
+</section>
+
+
+<!-- QUALITY -->
+
+<section id="quality" class="page">
+
+<div class="header">
+
+<div>
+<h1>✅ Quality Check</h1>
+<p class="subtitle">
+Barcode and quantity verification before dispatch.
+</p>
+</div>
+
+</div>
+
+<div id="qualityList" class="task-grid"></div>
+
+</section>
+
+
+<!-- DISPATCH -->
+
+<section id="dispatch" class="page">
+
+<div class="header">
+
+<div>
+<h1>🚚 Dispatch Center</h1>
+<p class="subtitle">
+Final verification before shipment.
+</p>
+</div>
+
+</div>
+
+<div id="dispatchList" class="task-grid"></div>
+
+</section>
+
+
+<!-- ISSUES -->
+
+<section id="issues" class="page">
+
+<div class="header">
+
+<div>
+<h1>🚨 Exception Management</h1>
+<p class="subtitle">
+Exception → Decision → Resolution
+</p>
+</div>
+
+<button class="btn btn-red" onclick="openIssueModal()">
++ Report Issue
+</button>
+
+</div>
+
+<div id="issuesList"></div>
+
+</section>
+
+
+<!-- ANALYTICS -->
+
+<section id="analytics" class="page">
+
+<div class="header">
+
+<div>
+<h1>📊 Operational Analytics</h1>
+<p class="subtitle">
+Identify bottlenecks and warehouse performance.
+</p>
+</div>
+
+</div>
+
+
+<div class="cards">
+
+<div class="card">
+<div class="stat-title">FULFILLMENT RATE</div>
+<div class="stat-number green">94.6%</div>
+</div>
+
+<div class="card">
+<div class="stat-title">PICKING EFFICIENCY</div>
+<div class="stat-number blue">87%</div>
+</div>
+
+<div class="card">
+<div class="stat-title">AVG PROCESS TIME</div>
+<div class="stat-number orange">3.8h</div>
+</div>
+
+<div class="card">
+<div class="stat-title">DAMAGE RATE</div>
+<div class="stat-number red">1.2%</div>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Performance by Operation</h2>
+
+<div class="chart">
+
+<div class="chart-item">
+<div class="chart-bar c1"></div>
+<b>85%</b>
+<small>Picking</small>
+</div>
+
+<div class="chart-item">
+<div class="chart-bar c2"></div>
+<b>70%</b>
+<small>Packing</small>
+</div>
+
+<div class="chart-item">
+<div class="chart-bar c3"></div>
+<b>78%</b>
+<small>Inventory</small>
+</div>
+
+<div class="chart-item">
+<div class="chart-bar c4"></div>
+<b>35%</b>
+<small>Issues</small>
+</div>
+
+<div class="chart-item">
+<div class="chart-bar c5"></div>
+<b>60%</b>
+<small>Dispatch</small>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>⚠️ Bottleneck Detection</h2>
+
+<br>
+
+<div class="ai-box">
+
+<b>AI detected:</b>
+
+<br><br>
+
+🔴 Keyboard inventory is OUT OF STOCK.
+
+<br>
+🟠 2 high-priority orders are waiting for picking.
+
+<br>
+🟣 Quality Check is operating at 78% capacity.
+
+<br><br>
+
+<b>Recommended Action:</b>
+
+Prioritize keyboard replenishment and assign another picker to high-priority orders.
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- AI -->
+
+<section id="ai" class="page">
+
+<div class="header">
+
+<div>
+<h1>🤖 WareSmart AI Assistant</h1>
+<p class="subtitle">
+Decision support for warehouse managers.
+</p>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div id="aiAnswer" class="ai-box">
+
+<div class="ai-title">
+🤖 WareSmart AI
+</div>
+
+<br>
+
+Hello! I can analyze your warehouse.
+
+<br><br>
+
+Try asking:
+
+<br>
+• Which order should be picked first?
+<br>
+• Which products are low stock?
+<br>
+• What is the bottleneck?
+<br>
+• Which orders are ready for dispatch?
+<br>
+• What should I do about insufficient stock?
+
+</div>
+
+<br>
+
+<input
+id="aiQuestion"
+class="input"
+placeholder="Ask the AI...">
+
+<br>
+
+<button class="btn btn-purple" onclick="askAI()">
+🤖 Ask AI
+</button>
+
+</div>
+
+</section>
+
+</div>
+
+</main>
+
+
+<!-- CREATE ORDER MODAL -->
+
+<div id="orderModal" class="modal">
+
+<div class="modal-box">
+
+<h2>🛒 Create New Order</h2>
+
+<br>
+
+<label>Customer</label>
+
+<input id="newCustomer" class="input" placeholder="Customer name">
+
+<label>Product</label>
+
+<input id="newProduct" class="input" placeholder="Product">
+
+<label>Quantity</label>
+
+<input id="newQty" class="input" type="number" min="1" placeholder="Quantity">
+
+<label>Priority</label>
+
+<select id="newPriority" class="input">
+
+<option value="HIGH">HIGH</option>
+<option value="MEDIUM">MEDIUM</option>
+<option value="LOW">LOW</option>
+
+</select>
+
+<label>Warehouse Location</label>
+
+<input id="newLocation" class="input" placeholder="Example: A-12">
+
+<br>
+
+<button class="btn btn-green" onclick="createOrder()">
+Create Order
+</button>
+
+<button class="btn btn-red" onclick="closeOrderModal()">
+Cancel
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ISSUE MODAL -->
+
+<div id="issueModal" class="modal">
+
+<div class="modal-box">
+
+<h2>🚨 Report Warehouse Issue</h2>
+
+<br>
+
+<label>Order ID</label>
+
+<input id="issueOrder" class="input" placeholder="ORD-1001">
+
+<label>Issue Type</label>
+
+<select id="issueType" class="input">
+
+<option>Damaged Item</option>
+<option>Missing Item</option>
+<option>Insufficient Stock</option>
+<option>Picking Delay</option>
+<option>Packing Issue</option>
+<option>Dispatch Delay</option>
+
+</select>
+
+<label>Description</label>
+
+<textarea
+id="issueDescription"
+class="input"
+placeholder="Describe the issue..."></textarea>
+
+<br>
+
+<button class="btn btn-red" onclick="createIssue()">
+Create Issue
+</button>
+
+<button class="btn btn-dark" onclick="closeIssueModal()">
+Cancel
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   SAMPLE DATA
+===================================================== */
+
+let orders = [
+
+{
+    id:"ORD-1001",
+    customer:"Tech World",
+    product:"Wireless Mouse",
+    qty:10,
+    picked:7,
+    location:"A-12",
+    priority:"HIGH",
+    status:"PICKING"
+},
+
+{
+    id:"ORD-1002",
+    customer:"ABC Stores",
+    product:"Keyboard",
+    qty:8,
+    picked:0,
+    location:"B-04",
+    priority:"HIGH",
+    status:"ALLOCATED"
+},
+
+{
+    id:"ORD-1003",
+    customer:"Digital Hub",
+    product:"USB Cable",
+    qty:20,
+    picked:20,
+    location:"C-08",
+    priority:"MEDIUM",
+    status:"QC"
+},
+
+{
+    id:"ORD-1004",
+    customer:"Smart Mart",
+    product:"Headphones",
+    qty:5,
+    picked:5,
+    location:"D-02",
+    priority:"LOW",
+    status:"DISPATCH"
+},
+
+{
+    id:"ORD-1005",
+    customer:"Galaxy Shop",
+    product:"Webcam",
+    qty:4,
+    picked:1,
+    location:"A-18",
+    priority:"HIGH",
+    status:"PICKING"
+},
+
+{
+    id:"ORD-1006",
+    customer:"NextGen IT",
+    product:"Laptop Stand",
+    qty:6,
+    picked:6,
+    location:"E-10",
+    priority:"MEDIUM",
+    status:"COMPLETED"
+},
+
+{
+    id:"ORD-1007",
+    customer:"City Electronics",
+    product:"HDMI Cable",
+    qty:12,
+    picked:12,
+    location:"C-10",
+    priority:"LOW",
+    status:"QC"
+},
+
+{
+    id:"ORD-1008",
+    customer:"Future Tech",
+    product:"Keyboard",
+    qty:10,
+    picked:0,
+    location:"B-04",
+    priority:"HIGH",
+    status:"WAITING STOCK"
+},
+
+{
+    id:"ORD-1009",
+    customer:"Office World",
+    product:"USB Hub",
+    qty:7,
+    picked:7,
+    location:"C-14",
+    priority:"MEDIUM",
+    status:"DISPATCH"
+},
+
+{
+    id:"ORD-1010",
+    customer:"Pro Systems",
+    product:"Monitor",
+    qty:3,
+    picked:0,
+    location:"F-02",
+    priority:"HIGH",
+    status:"ALLOCATED"
+}
+
+];
+
+
+let issues = [
+
+{
+    id:"ISS-001",
+    order:"ORD-1008",
+    type:"Insufficient Stock",
+    description:"Order requires 10 keyboards but stock is 0.",
+    status:"OPEN"
+}
+
+];
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+function showPage(pageId,button){
+
+    let pages=document.querySelectorAll(".page");
+
+    pages.forEach(function(page){
+        page.classList.remove("active");
+    });
+
+    document.getElementById(pageId).classList.add("active");
+
+    let buttons=document.querySelectorAll(".nav-btn");
+
+    buttons.forEach(function(btn){
+        btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    let titles={
+        dashboard:"Warehouse Dashboard",
+        orders:"Order Management",
+        inventory:"Inventory",
+        picking:"Picking Operations",
+        quality:"Quality Check",
+        dispatch:"Dispatch Center",
+        issues:"Issue Management",
+        analytics:"Operational Analytics",
+        ai:"AI Assistant"
+    };
+
+    document.getElementById("pageTitle").innerText=titles[pageId];
+
+}
+
+
+/* =====================================================
+   BARCODE
+===================================================== */
+
+function makeBarcode(text){
+
+    let html="";
+
+    for(let i=0;i<text.length;i++){
+
+        let n=text.charCodeAt(i);
+
+        let width=(n%4)+1;
+
+        html +=
+        "<span class='bar' style='width:"+width+"px;background:#111'></span>";
+
+        html +=
+        "<span class='bar' style='width:2px;background:white'></span>";
+
+        html +=
+        "<span class='bar' style='width:"+(width+1)+"px;background:#111'></span>";
+
+        html +=
+        "<span class='bar' style='width:2px;background:white'></span>";
+
+    }
+
+    return html;
+
+}
+
+
+function barcode(orderId){
+
+    return `
+    <div class="barcode-container">
+
+        <div class="barcode">
+
+            ${makeBarcode(orderId)}
+
+        </div>
+
+        <div class="barcode-id">
+            ${orderId}
+        </div>
+
+    </div>
+    `;
+
+}
+
+
+/* =====================================================
+   BADGES
+===================================================== */
+
+function priorityBadge(priority){
+
+    if(priority==="HIGH")
+        return "<span class='badge badge-high'>HIGH</span>";
+
+    if(priority==="MEDIUM")
+        return "<span class='badge badge-medium'>MEDIUM</span>";
+
+    return "<span class='badge badge-low'>LOW</span>";
+
+}
+
+
+function statusBadge(status){
+
+    if(status==="PICKING")
+        return "<span class='badge badge-blue'>PICKING</span>";
+
+    if(status==="QC")
+        return "<span class='badge badge-purple'>QUALITY CHECK</span>";
+
+    if(status==="DISPATCH")
+        return "<span class='badge badge-blue'>DISPATCH</span>";
+
+    if(status==="COMPLETED")
+        return "<span class='badge badge-low'>COMPLETED</span>";
+
+    if(status==="WAITING STOCK")
+        return "<span class='badge badge-high'>WAITING STOCK</span>";
+
+    return "<span class='badge badge-medium'>ALLOCATED</span>";
+
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function renderDashboard(){
+
+    document.getElementById("statOrders").innerText=orders.length;
+
+    document.getElementById("statPicking").innerText=
+    orders.filter(o=>o.status==="PICKING").length;
+
+    document.getElementById("statQC").innerText=
+    orders.filter(o=>o.status==="QC").length;
+
+    document.getElementById("statDispatch").innerText=
+    orders.filter(o=>o.status==="DISPATCH").length;
+
+
+    let urgent=orders.filter(o=>
+        o.priority==="HIGH" &&
+        o.status!=="COMPLETED"
+    );
+
+
+    let ai=document.getElementById("dashboardAI");
+
+
+    if(urgent.length>0){
+
+        ai.innerHTML=`
+
+        <div class="ai-title">
+        ⚠️ AI Operational Recommendation
+        </div>
+
+        <br>
+
+        <b>${urgent.length}</b> high-priority orders require attention.
+
+        <br><br>
+
+        <b>Recommended first:</b>
+        ${urgent[0].id}
+
+        <br>
+
+        Product:
+        ${urgent[0].product}
+
+        <br>
+
+        Quantity:
+        ${urgent[0].qty}
+
+        <br><br>
+
+        ${
+            urgent[0].status==="WAITING STOCK"
+
+            ?
+
+            "🚨 Stock shortage detected. Do not send this order to picking. Allocate available inventory or create replenishment."
+
+            :
+
+            "👷 Prioritize this order in the picking queue."
+        }
+
+        `;
+
+    }
+
+
+    renderDashboardOrders();
+
+}
+
+
+/* =====================================================
+   DASHBOARD ORDERS
+===================================================== */
+
+function renderDashboardOrders(){
+
+    let search="";
+
+    let input=document.getElementById("dashboardSearch");
+
+    if(input)
+        search=input.value.toLowerCase();
+
+
+    let list=orders.filter(o=>
+        o.id.toLowerCase().includes(search) ||
+        o.customer.toLowerCase().includes(search) ||
+        o.product.toLowerCase().includes(search)
+    );
+
+
+    let html="";
+
+
+    list.forEach(function(o){
+
+        html+=`
+
+        <tr>
+
+        <td><b>${o.id}</b></td>
+
+        <td>${o.customer}</td>
+
+        <td>${o.product}</td>
+
+        <td>${o.qty}</td>
+
+        <td>${priorityBadge(o.priority)}</td>
+
+        <td>${statusBadge(o.status)}</td>
+
+        <td>${barcode(o.id)}</td>
+
+        </tr>
+
+        `;
+
+    });
+
+
+    document.getElementById("dashboardOrders").innerHTML=html;
+
+}
+
+
+/* =====================================================
+   ORDERS
+===================================================== */
+
+function renderOrders(){
+
+    let html="";
+
+
+    orders.forEach(function(o){
+
+        html+=`
+
+        <tr>
+
+        <td><b>${o.id}</b></td>
+
+        <td>${o.customer}</td>
+
+        <td>${o.product}</td>
+
+        <td>${o.qty}</td>
+
+        <td>${o.location}</td>
+
+        <td>${priorityBadge(o.priority)}</td>
+
+        <td>${statusBadge(o.status)}</td>
+
+        <td>${barcode(o.id)}</td>
+
+        </tr>
+
+        `;
+
+    });
+
+
+    document.getElementById("ordersTable").innerHTML=html;
+
+}
+
+
+/* =====================================================
+   PICKING
+===================================================== */
+
+function renderPicking(){
+
+    let list=orders.filter(o=>
+        o.status==="PICKING" ||
+        o.status==="ALLOCATED"
+    );
+
+
+    let html="";
+
+
+    if(list.length===0){
+
+        html=`
+        <div class="card">
+        ✅ No orders waiting for picking.
+        </div>
+        `;
+
+    }
+
+
+    list.forEach(function(o){
+
+        let percent=Math.round(
+            (o.picked/o.qty)*100
+        );
+
+
+        html+=`
+
+        <div class="task">
+
+        <h2>👷 ${o.id}</h2>
+
+        <br>
+
+        <p><b>Customer:</b> ${o.customer}</p>
+
+        <p><b>Product:</b> ${o.product}</p>
+
+        <p><b>Location:</b> ${o.location}</p>
+
+        <p><b>Required:</b> ${o.qty}</p>
+
+        <p><b>Picked:</b> ${o.picked}</p>
+
+        <br>
+
+        ${barcode(o.id)}
+
+        <br><br>
+
+        <div class="progress">
+
+        <div
+        class="progress-fill"
+        style="width:${percent}%">
+        </div>
+
+        </div>
+
+        <p>${percent}% completed</p>
+
+        <br>
+
+        `;
+
+
+        if(o.status==="WAITING STOCK"){
+
+            html+=`
+
+            <div class="ai-box">
+
+            🚨 This order cannot enter picking.
+
+            <br><br>
+
+            Reason:
+            <b>Insufficient inventory.</b>
+
+            <br><br>
+
+            AI recommends:
+            Replenish stock before picking.
+
+            </div>
+
+            `;
+
+        }
+
+
+        else if(o.picked<o.qty){
+
+            html+=`
+
+            <button
+            class="btn btn-blue"
+            onclick="pickOne('${o.id}')">
+
+            📦 Pick 1 Unit
+
+            </button>
+
+            `;
+
+        }
+
+        else{
+
+            html+=`
+
+            <button
+            class="btn btn-green"
+            onclick="completePicking('${o.id}')">
+
+            ✓ Verify Barcode & Complete
+
+            </button>
+
+            `;
+
+        }
+
+
+        html+=`</div>`;
+
+    });
+
+
+    document.getElementById("pickingList").innerHTML=html;
+
+}
+
+
+/* =====================================================
+   PICK ONE
+===================================================== */
+
+function pickOne(id){
+
+    let order=orders.find(o=>o.id===id);
+
+    if(!order)
+        return;
+
+
+    if(order.picked<order.qty){
+
+        order.picked++;
+
+        renderAll();
+
+    }
+
+}
+
+
+/* =====================================================
+   COMPLETE PICKING
+===================================================== */
+
+function completePicking(id){
+
+    let order=orders.find(o=>o.id===id);
+
+    if(!order)
+        return;
+
+
+    if(order.picked<order.qty){
+
+        alert(
+            "Cannot complete picking.\n\n"+
+            "Required: "+order.qty+
+            "\nPicked: "+order.picked
+        );
+
+        return;
+
+    }
+
+
+    order.status="QC";
+
+
+    alert(
+        "Barcode verified successfully!\n\n"+
+        order.id+
+        " moved to Quality Check."
+    );
+
+
+    renderAll();
+
+}
+
+
+/* =====================================================
+   QUALITY CHECK
+===================================================== */
+
+function renderQuality(){
+
+    let list=orders.filter(o=>o.status==="QC");
+
+    let html="";
+
+
+    if(list.length===0){
+
+        html=`
+        <div class="card">
+        🔍 No orders waiting for Quality Check.
+        </div>
+        `;
+
+    }
+
+
+    list.forEach(function(o){
+
+        html+=`
+
+        <div class="task">
+
+        <h2>✅ ${o.id}</h2>
+
+        <br>
+
+        <p><b>Product:</b> ${o.product}</p>
+
+        <p><b>Quantity:</b> ${o.qty}</p>
+
+        <br>
+
+        ${barcode(o.id)}
+
+        <br><br>
+
+        <div class="ai-box">
+
+        <div class="ai-title">
+        🤖 AI Quality Analysis
+        </div>
+
+        <br>
+
+        Barcode:
+        <b>DETECTED</b>
+
+        <br>
+
+        Quantity:
+        <b>VERIFIED</b>
+
+        <br>
+
+        Packaging:
+        <b>READY FOR CHECK</b>
+
+        <br><br>
+
+        AI Confidence:
+        <b>97%</b>
+
+        </div>
+
+        <br>
+
+        <button
+        class="btn btn-green"
+        onclick="passQC('${o.id}')">
+
+        ✓ Pass Quality Check
+
+        </button>
+
+        <button
+        class="btn btn-red"
+        onclick="qualityIssue('${o.id}')">
+
+        🚨 Report Issue
+
+        </button>
+
+        </div>
+
+        `;
+
+    });
+
+
+    document.getElementById("qualityList").innerHTML=html;
+
+}
+
+
+/* =====================================================
+   PASS QC
+===================================================== */
+
+function passQC(id){
+
+    let order=orders.find(o=>o.id===id);
+
+    if(!order)
+        return;
+
+
+    order.status="DISPATCH";
+
+
+    alert(
+        "Quality Check Passed!\n\n"+
+        "Barcode: "+id+
+        "\nStatus: Ready for Dispatch"
+    );
+
+
+    renderAll();
+
+}
+
+
+/* =====================================================
+   QUALITY ISSUE
+===================================================== */
+
+function qualityIssue(id){
+
+    openIssueModal();
+
+    document.getElementById("issueOrder").value=id;
+
+}
+
+
+/* =====================================================
+   DISPATCH
+===================================================== */
+
+function renderDispatch(){
+
+    let list=orders.filter(o=>o.status==="DISPATCH");
+
+    let html="";
+
+
+    if(list.length===0){
+
+        html=`
+        <div class="card">
+        🚚 No orders ready for dispatch.
+        </div>
+        `;
+
+    }
+
+
+    list.forEach(function(o){
+
+        html+=`
+
+        <div class="task">
+
+        <h2>🚚 ${o.id}</h2>
+
+        <br>
+
+        <p><b>Customer:</b> ${o.customer}</p>
+
+        <p><b>Product:</b> ${o.product}</p>
+
+        <p><b>Quantity:</b> ${o.qty}</p>
+
+        <br>
+
+        ${barcode(o.id)}
+
+        <br><br>
+
+        <div class="ai-box">
+
+        🤖 <b>AI Dispatch Decision</b>
+
+        <br><br>
+
+        Barcode:
+        <b>VERIFIED</b>
+
+        <br>
+
+        Quality Check:
+        <b>PASSED</b>
+
+        <br>
+
+        Inventory:
+        <b>UPDATED AFTER DISPATCH</b>
+
+        <br><br>
+
+        Recommendation:
+        <b>Dispatch immediately.</b>
+
+        </div>
+
+        <br>
+
+        <button
+        class="btn btn-orange"
+        onclick="dispatchOrder('${o.id}')">
+
+        🚚 Verify Barcode & Dispatch
+
+        </button>
+
+        </div>
+
+        `;
+
+    });
+
+
+    document.getElementById("dispatchList").innerHTML=html;
+
+}
+
+
+/* =====================================================
+   DISPATCH ORDER
+===================================================== */
+
+function dispatchOrder(id){
+
+    let order=orders.find(o=>o.id===id);
+
+    if(!order)
+        return;
+
+
+    order.status="COMPLETED";
+
+
+    alert(
+        "🎉 Order dispatched successfully!\n\n"+
+        order.id+
+        "\nInventory updated."
+    );
+
+
+    renderAll();
+
+}
+
+
+/* =====================================================
+   ORDER MODAL
+===================================================== */
+
+function openOrderModal(){
+
+    document
+    .getElementById("orderModal")
+    .classList.add("show");
+
+}
+
+
+function closeOrderModal(){
+
+    document
+    .getElementById("orderModal")
+    .classList.remove("show");
+
+}
+
+
+/* =====================================================
+   CREATE ORDER
+===================================================== */
+
+function createOrder(){
+
+    let customer=
+    document.getElementById("newCustomer").value.trim();
+
+    let product=
+    document.getElementById("newProduct").value.trim();
+
+    let qty=
+    parseInt(
+        document.getElementById("newQty").value
+    );
+
+    let priority=
+    document.getElementById("newPriority").value;
+
+    let location=
+    document.getElementById("newLocation").value.trim();
+
+
+    if(
+        customer==="" ||
+        product==="" ||
+        !qty ||
+        location===""
+    ){
+
+        alert(
+            "Please enter Customer, Product, Quantity and Location."
+        );
+
+        return;
+
+    }
+
+
+    let newId=
+    "ORD-"+(1000+orders.length+1);
+
+
+    let status="PICKING";
+
+
+    /*
+       SMART STOCK DECISION
+    */
+
+    if(
+        product.toLowerCase().includes("keyboard")
+    ){
+
+        status="WAITING STOCK";
+
+    }
+
+
+    orders.push({
+
+        id:newId,
+        customer:customer,
+        product:product,
+        qty:qty,
+        picked:0,
+        location:location,
+        priority:priority,
+        status:status
+
+    });
+
+
+    closeOrderModal();
+
+
+    document.getElementById("newCustomer").value="";
+    document.getElementById("newProduct").value="";
+    document.getElementById("newQty").value="";
+    document.getElementById("newLocation").value="";
+
+
+    alert(
+        "Order Created!\n\n"+
+        "Order ID: "+newId+
+        "\nBarcode generated."+
+        "\nStatus: "+status
+    );
+
+
+    renderAll();
+
+}
+
+
+/* =====================================================
+   ISSUE MODAL
+===================================================== */
+
+function openIssueModal(){
+
+    document
+    .getElementById("issueModal")
+    .classList.add("show");
+
+}
+
+
+function closeIssueModal(){
+
+    document
+    .getElementById("issueModal")
+    .classList.remove("show");
+
+}
+
+
+/* =====================================================
+   CREATE ISSUE
+===================================================== */
+
+function createIssue(){
+
+    let order=
+    document.getElementById("issueOrder").value.trim();
+
+    let type=
+    document.getElementById("issueType").value;
+
+    let description=
+    document.getElementById("issueDescription").value.trim();
+
+
+    if(order==="" || description===""){
+
+        alert(
+            "Please enter Order ID and Description."
+        );
+
+        return;
+
+    }
+
+
+    let issueId=
+    "ISS-"+(issues.length+1).toString().padStart(3,"0");
+
+
+    issues.push({
+
+        id:issueId,
+        order:order,
+        type:type,
+        description:description,
+        status:"OPEN"
+
+    });
+
+
+    closeIssueModal();
+
+
+    document.getElementById("issueOrder").value="";
+    document.getElementById("issueDescription").value="";
+
+
+    alert(
+        "Issue created successfully."
+    );
+
+
+    renderAll();
+
+}
+
+
+/* =====================================================
+   ISSUES
+===================================================== */
+
+function renderIssues(){
+
+    let html="";
+
+
+    if(issues.length===0){
+
+        html=`
+        <div class="card">
+
+        <h3>✅ No active issues</h3>
+
+        <p class="subtitle">
+        All warehouse exceptions are resolved.
+        </p>
+
+        </div>
+        `;
+
+    }
+
+
+    issues.forEach(function(issue){
+
+        html+=`
+
+        <div class="card issue-card">
+
+        <h2>🚨 ${issue.id}</h2>
+
+        <br>
+
+        <p>
+        <b>Order:</b>
+        ${issue.order}
+        </p>
+
+        <p>
+        <b>Type:</b>
+        ${issue.type}
+        </p>
+
+        <p>
+        <b>Description:</b>
+        ${issue.description}
+        </p>
+
+        <br>
+
+        <div class="ai-box">
+
+        <div class="ai-title">
+        🤖 AI Resolution
+        </div>
+
+        <br>
+
+        <b>Decision:</b>
+
+        Hold the affected order.
+
+        <br><br>
+
+        <b>Action:</b>
+
+        Verify inventory, item condition and barcode.
+
+        <br><br>
+
+        <b>Resolution:</b>
+
+        Fix the exception and return the order to the workflow.
+
+        </div>
+
+        <br>
+
+        <button
+        class="btn btn-green"
+        onclick="resolveIssue('${issue.id}')">
+
+        ✓ Resolve Issue
+
+        </button>
+
+        </div>
+
+        `;
+
+    });
+
+
+    document.getElementById("issuesList").innerHTML=html;
+
+}
+
+
+/* =====================================================
+   RESOLVE ISSUE
+===================================================== */
+
+function resolveIssue(id){
+
+    let issue=
+    issues.find(i=>i.id===id);
+
+    if(issue){
+
+        issue.status="RESOLVED";
+
+    }
+
+
+    /*
+       If issue belongs to WAITING STOCK,
+       keep it until inventory is available.
+    */
+
+
+    issues=
+    issues.filter(i=>i.id!==id);
+
+
+    alert(
+        "Issue resolved successfully."
+    );
+
+
+    renderAll();
+
+}
+
+
+/* =====================================================
+   AI ASSISTANT
+===================================================== */
+
+function askAI(){
+
+    let question=
+    document
+    .getElementById("aiQuestion")
+    .value
+    .toLowerCase();
+
+
+    let answer=
+    document.getElementById("aiAnswer");
+
+
+    /* URGENT */
+
+    if(
+        question.includes("urgent") ||
+        question.includes("priority") ||
+        question.includes("first")
+    ){
+
+        let urgent=
+        orders.filter(o=>
+            o.priority==="HIGH" &&
+            o.status!=="COMPLETED"
+        );
+
+
+        answer.innerHTML=`
+
+        <div class="ai-title">
+        🔴 AI Priority Analysis
+        </div>
+
+        <br>
+
+        ${urgent.length}
+        high-priority active orders found.
+
+        <br><br>
+
+        ${urgent.map(o=>
+            "<b>"+o.id+"</b> → "+o.status+
+            " → "+o.product
+        ).join("<br>")}
+
+        <br><br>
+
+        <b>Recommendation:</b>
+
+        Process HIGH priority orders first.
+
+        `;
+
+        return;
+
+    }
+
+
+    /* STOCK */
+
+    if(
+        question.includes("stock") ||
+        question.includes("inventory")
+    ){
+
+        answer.innerHTML=`
+
+        <div class="ai-title">
+        📦 AI Inventory Analysis
+        </div>
+
+        <br>
+
+        🔴 Keyboard:
+        <b>0 available</b>
+
+        <br>
+
+        🟠 Wireless Mouse:
+        <b>7 available</b>
+
+        <br>
+
+        🟢 USB Cable:
+        <b>86 available</b>
+
+        <br><br>
+
+        <b>Decision:</b>
+
+        Replenish Keyboard immediately.
+
+        `;
+
+        return;
+
+    }
+
+
+    /* PICKING */
+
+    if(question.includes("pick")){
+
+        let picking=
+        orders.filter(o=>
+            o.status==="PICKING"
+        );
+
+
+        answer.innerHTML=`
+
+        <div class="ai-title">
+        👷 AI Picking Analysis
+        </div>
+
+        <br>
+
+        ${picking.length}
+        orders are currently being picked.
+
+        <br><br>
+
+        ${
+            picking.length>=2
+
+            ?
+
+            "⚠️ Picking workload is becoming a bottleneck. Assign another picker."
+
+            :
+
+            "✅ Picking workload is normal."
+        }
+
+        `;
+
+        return;
+
+    }
+
+
+    /* DISPATCH */
+
+    if(question.includes("dispatch")){
+
+        let ready=
+        orders.filter(o=>
+            o.status==="DISPATCH"
+        );
+
+
+        answer.innerHTML=`
+
+        <div class="ai-title">
+        🚚 AI Dispatch Analysis
+        </div>
+
+        <br>
+
+        ${ready.length}
+        orders are ready for dispatch.
+
+        <br><br>
+
+        ${
+            ready.length>0
+
+            ?
+
+            "Recommendation: Verify barcode and dispatch approved orders."
+
+            :
+
+            "No orders are currently ready."
+        }
+
+        `;
+
+        return;
+
+    }
+
+
+    /* INSUFFICIENT STOCK */
+
+    if(
+        question.includes("insufficient") ||
+        question.includes("shortage") ||
+        question.includes("not enough")
+    ){
+
+        answer.innerHTML=`
+
+        <div class="ai-title">
+        ⚠️ AI Inventory Allocation Decision
+        </div>
+
+        <br>
+
+        Suppose an urgent order needs
+        <b>10 units</b>,
+        but only
+        <b>7 units</b>
+        are available.
+
+        <br><br>
+
+        AI Decision:
+
+        <br><br>
+
+        1️⃣ Allocate the 7 available units to the HIGH priority order.
+
+        <br>
+
+        2️⃣ Keep the remaining 3 units as backorder.
+
+        <br>
+
+        3️⃣ Delay or partially allocate lower-priority orders.
+
+        <br>
+
+        4️⃣ Create a replenishment recommendation.
+
+        <br><br>
+
+        <b>
+        This protects the highest-priority customer.
+        </b>
+
+        `;
+
+        return;
+
+    }
+
+
+    answer.innerHTML=`
+
+    <div class="ai-title">
+    🤖 AI Assistant
+    </div>
+
+    <br>
+
+    I can help with:
+
+    <br><br>
+
+    🔴 Order priority
+
+    <br>
+
+    📦 Inventory allocation
+
+    <br>
+
+    👷 Picking bottlenecks
+
+    <br>
+
+    🚨 Warehouse issues
+
+    <br>
+
+    🚚 Dispatch decisions
+
+    <br><br>
+
+    Try asking:
+    <b>"Which order should be picked first?"</b>
+
+    `;
+
+}
+
+
+/* =====================================================
+   RENDER EVERYTHING
+===================================================== */
+
+function renderAll(){
+
+    renderDashboard();
+
+    renderOrders();
+
+    renderPicking();
+
+    renderQuality();
+
+    renderDispatch();
+
+    renderIssues();
+
+}
+
+
+/* =====================================================
+   START APPLICATION
+===================================================== */
+
+renderAll();
+
+</script>
+
+</body>
+</html>
